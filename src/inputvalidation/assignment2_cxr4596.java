@@ -2,36 +2,89 @@ package inputvalidation;
 
 import java.sql.*;
 
-//no need for buffer overflow
-//no need for scanner
-//one run == one transaction
-
 public class assignment2_cxr4596 {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-			// Store necessary values
-//			String connectionUrl = "jdbc:mysql://localhost:8080;databaseName=secureprogramming;user=class;password=CSE5382";
-			// Declare the JDBC objects.  
-			Connection con = null;
-			Statement stmt = null;
-			ResultSet rs = null;
+		assignment2_cxr4596 db = new assignment2_cxr4596();
+			
+		//validateCommand();
+			
+		if(args.length == 0)
+			db.help();
+		else if(args[0].equalsIgnoreCase("ADD"))
+			db.insert(args[1], args[2]);
+		else if(args[0].equalsIgnoreCase("DEL"))
+			db.delete(args[1]);
+		else if(args[0].equalsIgnoreCase("LIST"))
+			db.list();
+		else
+			System.out.println("Invalid argument: " + args[0]);
+	}
+	
+	public void help() {
+		System.out.println("Proper arguments for assignment2_cxr4596:");
+		System.out.println("\tADD \"<name>\" \"<phone_number>\" - add a new unique user");
+		System.out.println("\tDEL \"<phone_number>\" - remove a user based on phone number");
+		System.out.println("\tDEL \"<name>\" - remove a user based on phone number");
+		System.out.println("\tLIST - list all current names and numbers in the database");
+    }
+	
+	public void list() {
+        String listAll = "SELECT * FROM USERS";
 
-			try {
-				// Establish the connection.  
-//				Class.forName("com.mysql.jdbc.Driver");  
-//				con = DriverManager.getConnection(connectionUrl);
-				System.out.println("Echo:\t\t" + args[0] + "\n");
-			}
-			// Handle any errors that may have occurred.  
-			catch (Exception e) {  
-				e.printStackTrace();  
-			}  
-			finally {  
-				if (rs != null) try { rs.close(); } catch(Exception e) {}  
-				if (stmt != null) try { stmt.close(); } catch(Exception e) {}  
-				if (con != null) try { con.close(); } catch(Exception e) {}
-			}
+        try{
+        	Connection conn = this.connect();
+        	PreparedStatement pstmt = conn.prepareStatement(listAll);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+	
+	public void delete(String name) {
+        String del = "DELETE FROM USERS WHERE NAME = ? OR PHONE = ?";
+
+        try{
+        	Connection conn = this.connect();
+        	//switch here on name/phone
+        	PreparedStatement del_user = conn.prepareStatement(del);
+            del_user.setString(1, name);
+            del_user.setString(2, name);
+            del_user.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+	public void insert(String name, String phone) {
+        String insert = "INSERT INTO users(name,phone) VALUES(?,?)";
+
+        try{
+        	Connection conn = this.connect();
+        	PreparedStatement pstmt = conn.prepareStatement(insert);
+            pstmt.setString(1, name.toUpperCase());
+            pstmt.setString(2, phone);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+	private Connection connect() {
+		// Store necessary values
+		String connectionUrl = "jdbc:sqlite://C:/Users/IBM_ADMIN/workspace/SecureProgrammingAssignment2/src/inputvalidation/telephone.db";
+		// Declare the JDBC objects.  
+		Connection con = null;
+		
+		try {
+			// Establish the connection.  
+			con = DriverManager.getConnection(connectionUrl);
+		}
+		// Handle any errors that may have occurred.  
+		catch (SQLException e) {  
+			System.out.println(e.getMessage());  
+		}  
+		return con;
 	}
 
 }
