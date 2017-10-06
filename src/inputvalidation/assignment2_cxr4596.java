@@ -1,24 +1,37 @@
 package inputvalidation;
 
-import java.util.Scanner;
+import java.sql.*;
+
+//no need for buffer overflow
+//no need for scanner
+//one run == one transaction
 
 public class assignment2_cxr4596 {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-			Scanner input = new Scanner(System.in);
-			boolean done = false;
+			// Store necessary values
+//			String connectionUrl = "jdbc:mysql://localhost:8080;databaseName=secureprogramming;user=class;password=CSE5382";
+			// Declare the JDBC objects.  
+			Connection con = null;
+			Statement stmt = null;
+			ResultSet rs = null;
 
-			do{
-				System.out.print("Enter a word:\t");
-				String test = input.nextLine();
-				System.out.println("Echo:\t\t" + test + "\n");
-				
-				if(test.equalsIgnoreCase("done") || test.equalsIgnoreCase("exit"))
-					done = true;
-			}while(!done);
-			
-			input.close();
+			try {
+				// Establish the connection.  
+//				Class.forName("com.mysql.jdbc.Driver");  
+//				con = DriverManager.getConnection(connectionUrl);
+				System.out.println("Echo:\t\t" + args[0] + "\n");
+			}
+			// Handle any errors that may have occurred.  
+			catch (Exception e) {  
+				e.printStackTrace();  
+			}  
+			finally {  
+				if (rs != null) try { rs.close(); } catch(Exception e) {}  
+				if (stmt != null) try { stmt.close(); } catch(Exception e) {}  
+				if (con != null) try { con.close(); } catch(Exception e) {}
+			}
 	}
 
 }
