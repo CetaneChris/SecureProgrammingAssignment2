@@ -133,8 +133,8 @@ public class assignment2_cxr4596 {
 		if(name.split(" ").length > 3)
 			return false;
 
-		String rex_name = "^\\d+\\.\\s\\p{Lu}+.*";													// Regular Expression to match names
-		String rex_single = "^([a-zA-Z])'?[a-zA-Z]*-?[a-zA-Z],? ([a-zA-Z])'?[a-zA-Z]*-?[a-zA-Z]*$";	// Regular Expression to match single names
+		String rex_name = "^([a-zA-Z])'?[a-zA-Z]*-?[a-zA-Z],? ([a-zA-Z])'?[a-zA-Z]*-?[a-zA-Z]*$";	// Regular Expression to match full names
+		String rex_single = "^([a-zA-Z])'?[a-zA-Z]*-?[a-zA-Z]$";									// Regular Expression to match single names
 		
 		return name.matches(rex_name) || name.matches(rex_single);
 	}
@@ -142,8 +142,8 @@ public class assignment2_cxr4596 {
 	public boolean validateNumber(String number){	// Function to validate phone number input 
 		String rex_US = "^(\\+1)?[\\.\\-( ]*([0-9]{3})[\\.\\-) ]*([0-9]{3})[\\.\\- ]*([0-9]{4})$";		// Regular Expression to match American numbers
 		String rex_English = "^\\+?\\d{2}( ?\\()-?\\d{2}(\\) ?) ?\\d{3}-?\\d{4}$";						// Regular Expression to match English numbers
-		String rex_groups = "^\\d{5}\\.\\d{5}$";
-		String rex_US_country = "^\\d{3} (1 )?\\d{3} \\d{3} \\d{4}$";
+		String rex_groups = "^\\d{5}\\.\\d{5}$";														// Regular Expression to match numbers in format #####.#####
+		String rex_US_country = "^\\d{3} (1 )?\\d{2,3} \\d{3} \\d{4}$";									// Regular Expression to match numbers in format +## (###) ### #####
 		
 		return number.matches(rex_US) || number.matches(rex_English) || number.matches(rex_groups) || number.matches(rex_US_country);
 	}
