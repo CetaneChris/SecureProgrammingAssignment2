@@ -81,7 +81,7 @@ public class assignment2_cxr4596 {
     		}
     	}
     	else
-    		System.out.println("Invalid input");
+    		System.out.println("Error: Invalid entry");
     }
 
 	public void insert(String name, String phone) {
@@ -94,7 +94,7 @@ public class assignment2_cxr4596 {
     	name_in = validateName(name);
     	number = validateNumber(phone);
 
-    	if(name_in || number){        
+    	if(name_in && number){        
     		try{
     			conn = this.connect();
     			pstmt = conn.prepareStatement(insert);
@@ -108,6 +108,8 @@ public class assignment2_cxr4596 {
     			try { conn.close(); } catch (Exception e) { /* ignored */ }
     		}
     	}
+    	else
+    		System.out.println("Error: Invalid entry");
 	}
 	
 	private Connection connect() {
@@ -127,16 +129,23 @@ public class assignment2_cxr4596 {
 		return con;
 	}
 	
-	public boolean validateName(String input){
-		String rex = "^\\d+\\.\\s\\p{Lu}+.*";
+	public boolean validateName(String name){		// Function to validate name input
+		if(name.split(" ").length > 3)
+			return false;
+
+		String rex_name = "^\\d+\\.\\s\\p{Lu}+.*";													// Regular Expression to match names
+		String rex_single = "^([a-zA-Z])'?[a-zA-Z]*-?[a-zA-Z],? ([a-zA-Z])'?[a-zA-Z]*-?[a-zA-Z]*$";	// Regular Expression to match single names
 		
-		return input.matches(rex);
+		return name.matches(rex_name) || name.matches(rex_single);
 	}
 	
-	public boolean validateNumber(String input){
-		String rex = "^\\d+\\.\\s\\p{Lu}+.*";
+	public boolean validateNumber(String number){	// Function to validate phone number input 
+		String rex_US = "^(\\+1)?[\\.\\-( ]*([0-9]{3})[\\.\\-) ]*([0-9]{3})[\\.\\- ]*([0-9]{4})$";		// Regular Expression to match American numbers
+		String rex_English = "^\\+?\\d{2}( ?\\()-?\\d{2}(\\) ?) ?\\d{3}-?\\d{4}$";						// Regular Expression to match English numbers
+		String rex_groups = "^\\d{5}\\.\\d{5}$";
+		String rex_US_country = "^\\d{3} (1 )?\\d{3} \\d{3} \\d{4}$";
 		
-		return input.matches(rex);
+		return number.matches(rex_US) || number.matches(rex_English) || number.matches(rex_groups) || number.matches(rex_US_country);
 	}
 
 }
