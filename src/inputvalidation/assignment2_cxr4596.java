@@ -6,9 +6,7 @@ public class assignment2_cxr4596 {
 
 	public static void main(String[] args) {
 		assignment2_cxr4596 db = new assignment2_cxr4596();
-			
-		//validateCommand();
-			
+		
 		if(args.length == 0)
 			db.help();
 		else if(args[0].equalsIgnoreCase("ADD"))
@@ -20,7 +18,7 @@ public class assignment2_cxr4596 {
 		else
 			System.out.println("Invalid argument: " + args[0]);
 	}
-	
+
 	public void help() {
 		System.out.println("Proper arguments for assignment2_cxr4596:");
 		System.out.println("\tADD \"<name>\" \"<phone_number>\" - add a new unique user");
@@ -28,51 +26,93 @@ public class assignment2_cxr4596 {
 		System.out.println("\tDEL \"<name>\" - remove a user based on phone number");
 		System.out.println("\tLIST - list all current names and numbers in the database");
     }
-	
+
 	public void list() {
         String listAll = "SELECT * FROM USERS";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
 
         try{
-        	Connection conn = this.connect();
-        	PreparedStatement pstmt = conn.prepareStatement(listAll);
-            pstmt.executeUpdate();
+        	conn = this.connect();
+        	pstmt = conn.prepareStatement(listAll);
+        	rs = pstmt.executeQuery();ResultSetMetaData rsmd = rs.getMetaData();
+        	int columnsNumber = rsmd.getColumnCount();
+        	while (rs.next()) {
+        		for (int i = 1; i <= columnsNumber; i++) {
+        			if (i > 1) System.out.print("\t");
+        			String columnValue = rs.getString(i);
+        			System.out.print(columnValue);
+        		}
+        		System.out.println();
+        	}
+        	System.out.println(rs.getString(2));
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        } finally {
+            try { rs.close(); } catch (Exception e) { /* ignored */ }
+            try { pstmt.close(); } catch (Exception e) { /* ignored */ }
+            try { conn.close(); } catch (Exception e) { /* ignored */ }
         }
     }
-	
-	public void delete(String name) {
-        String del = "DELETE FROM USERS WHERE NAME = ? OR PHONE = ?";
 
-        try{
-        	Connection conn = this.connect();
-        	//switch here on name/phone
-        	PreparedStatement del_user = conn.prepareStatement(del);
-            del_user.setString(1, name);
-            del_user.setString(2, name);
-            del_user.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+	public void delete(String input) {
+		String del = "DELETE FROM USERS WHERE NAME = ? OR PHONE = ?";
+
+		Connection conn = null;
+    	PreparedStatement del_user =  null;
+    	
+    	boolean name,number;
+    	name = validateName(input);
+    	number = validateNumber(input);
+
+    	if(name || number){
+    		try{
+    			conn = this.connect();
+    			del_user = conn.prepareStatement(del);
+    			del_user.setString(1, input);
+    			del_user.setString(2, input);
+    			del_user.executeUpdate();
+    		} catch (SQLException e) {
+    			System.out.println(e.getMessage());
+    		} finally {
+    			try { del_user.close(); } catch (Exception e) { /* ignored */ }
+    			try { conn.close(); } catch (Exception e) { /* ignored */ }
+    		}
+    	}
+    	else
+    		System.out.println("Invalid input");
     }
 
 	public void insert(String name, String phone) {
         String insert = "INSERT INTO users(name,phone) VALUES(?,?)";
 
-        try{
-        	Connection conn = this.connect();
-        	PreparedStatement pstmt = conn.prepareStatement(insert);
-            pstmt.setString(1, name.toUpperCase());
-            pstmt.setString(2, phone);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
+        Connection conn = null;
+    	PreparedStatement pstmt = null;
 
+    	boolean name_in,number;
+    	name_in = validateName(name);
+    	number = validateNumber(phone);
+
+    	if(name_in || number){        
+    		try{
+    			conn = this.connect();
+    			pstmt = conn.prepareStatement(insert);
+    			pstmt.setString(1, name.toUpperCase());		// TODO Case insensitive or not?
+    			pstmt.setString(2, phone);
+    			pstmt.executeUpdate();
+    		} catch (SQLException e) {
+    			System.out.println(e.getMessage());
+    		} finally {
+    			try { pstmt.close(); } catch (Exception e) { /* ignored */ }
+    			try { conn.close(); } catch (Exception e) { /* ignored */ }
+    		}
+    	}
+	}
+	
 	private Connection connect() {
 		// Store necessary values
-		String connectionUrl = "jdbc:sqlite://C:/Users/IBM_ADMIN/workspace/SecureProgrammingAssignment2/src/inputvalidation/telephone.db";
+		String connectionUrl = "jdbc:sqlite:telephone.db";
 		// Declare the JDBC objects.  
 		Connection con = null;
 		
@@ -85,6 +125,18 @@ public class assignment2_cxr4596 {
 			System.out.println(e.getMessage());  
 		}  
 		return con;
+	}
+	
+	public boolean validateName(String input){
+		String rex = "^\\d+\\.\\s\\p{Lu}+.*";
+		
+		return input.matches(rex);
+	}
+	
+	public boolean validateNumber(String input){
+		String rex = "^\\d+\\.\\s\\p{Lu}+.*";
+		
+		return input.matches(rex);
 	}
 
 }
