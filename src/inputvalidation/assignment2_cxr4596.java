@@ -50,9 +50,9 @@ public class assignment2_cxr4596 {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            try { rs.close(); } catch (Exception e) { /* ignored */ }
-            try { pstmt.close(); } catch (Exception e) { /* ignored */ }
-            try { conn.close(); } catch (Exception e) { /* ignored */ }
+            try { rs.close(); } catch (Exception e){}
+            try { pstmt.close(); } catch (Exception e){}
+            try { conn.close(); } catch (Exception e){}
         }
     }
 
@@ -76,8 +76,8 @@ public class assignment2_cxr4596 {
     		} catch (SQLException e) {
     			System.out.println(e.getMessage());
     		} finally {
-    			try { del_user.close(); } catch (Exception e) { /* ignored */ }
-    			try { conn.close(); } catch (Exception e) { /* ignored */ }
+    			try { del_user.close(); } catch (Exception e) {}
+    			try { conn.close(); } catch (Exception e) {}
     		}
     	}
     	else
@@ -98,14 +98,14 @@ public class assignment2_cxr4596 {
     		try{
     			conn = this.connect();
     			pstmt = conn.prepareStatement(insert);
-    			pstmt.setString(1, name.toUpperCase());		// TODO Case insensitive or not?
+    			pstmt.setString(1, name.toUpperCase());
     			pstmt.setString(2, phone);
     			pstmt.executeUpdate();
     		} catch (SQLException e) {
     			System.out.println(e.getMessage());
     		} finally {
-    			try { pstmt.close(); } catch (Exception e) { /* ignored */ }
-    			try { conn.close(); } catch (Exception e) { /* ignored */ }
+    			try { pstmt.close(); } catch (Exception e) {}
+    			try { conn.close(); } catch (Exception e) {}
     		}
     	}
     	else
@@ -133,7 +133,7 @@ public class assignment2_cxr4596 {
 		if(name.split(" ").length > 3)
 			return false;
 
-		String rex_name = "^([a-zA-Z])'?[a-zA-Z]*-?[a-zA-Z],? ([a-zA-Z])'?[a-zA-Z]*-?[a-zA-Z]*$";	// Regular Expression to match full names
+		String rex_name = "^([a-zA-Z])'?[a-zA-Z]*-?[a-zA-Z],? ([a-zA-Z])'?[a-zA-Z]*-?[a-zA-Z ]*$";	// Regular Expression to match full names
 		String rex_single = "^([a-zA-Z])'?[a-zA-Z]*-?[a-zA-Z]$";									// Regular Expression to match single names
 		
 		return name.matches(rex_name) || name.matches(rex_single);
