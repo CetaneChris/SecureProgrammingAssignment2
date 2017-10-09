@@ -20,8 +20,12 @@ public class assignment2_cxr4596 {
 			db.delete(args[1]);
 		else if(args[0].equalsIgnoreCase("LIST"))
 			db.list();
-		else
-			System.out.println("Invalid argument: " + args[0]);
+		else{
+			System.err.println("Invalid argument: " + args[0]);
+			System.exit(1);
+		}
+		
+		System.exit(0);
 	}
 
 	public void help() {
@@ -53,7 +57,8 @@ public class assignment2_cxr4596 {
         	}
         	System.out.println(rs.getString(2));
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
+			System.exit(1);
         } finally {
             try { rs.close(); } catch (Exception e){}
             try { pstmt.close(); } catch (Exception e){}
@@ -77,16 +82,24 @@ public class assignment2_cxr4596 {
     			del_user = conn.prepareStatement(del);
     			del_user.setString(1, input);
     			del_user.setString(2, input);
-    			del_user.executeUpdate();
+    			if(del_user.executeUpdate() <= 0){
+    				System.err.println("Error: Entry not found");
+    				System.exit(1);
+    			}
+    			else
+    				System.out.println("Successfully deleted");
     		} catch (SQLException e) {
-    			System.out.println(e.getMessage());
+    			System.err.println(e.getMessage());
+    			System.exit(1);
     		} finally {
     			try { del_user.close(); } catch (Exception e) {}
     			try { conn.close(); } catch (Exception e) {}
     		}
     	}
-    	else
-    		System.out.println("Error: Invalid entry");
+    	else{
+    		System.err.println("Error: Invalid entry");
+    		System.exit(1);
+    	}
     }
 
 	public void insert(String name, String phone) {
@@ -107,14 +120,17 @@ public class assignment2_cxr4596 {
     			pstmt.setString(2, phone);
     			pstmt.executeUpdate();
     		} catch (SQLException e) {
-    			System.out.println(e.getMessage());
+    			System.err.println(e.getMessage());
+    			System.exit(1);
     		} finally {
     			try { pstmt.close(); } catch (Exception e) {}
     			try { conn.close(); } catch (Exception e) {}
     		}
     	}
-    	else
-    		System.out.println("Error: Invalid entry");
+    	else{
+    		System.err.println("Error: Invalid entry");
+			System.exit(1);
+		}
 	}
 	
 	private Connection connect() {
@@ -129,8 +145,9 @@ public class assignment2_cxr4596 {
 		}
 		// Handle any errors that may have occurred.  
 		catch (SQLException e) {  
-			System.out.println(e.getMessage());  
-		}  
+			System.err.println(e.getMessage());
+			System.exit(1);  
+		}
 		return con;
 	}
 	
